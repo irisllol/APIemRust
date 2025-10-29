@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Criptografia RSA em Tempo Real</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #b2047b 0%, #2a0037 100%);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            max-width: 900px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            color: #590862;
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+            font-weight: 700;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #131313;
+            margin-bottom: 40px;
+            font-size: 1.1em;
+        }
+
+        .section {
+            margin-bottom: 30px;
+        }
+
+        h2 {
+            color: #764ba2;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        label {
+            display: block;
+            color: #333;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 14px;
+            resize: vertical;
+            min-height: 120px;
+            transition: border-color 0.3s;
+            background: #fafafa;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #710071;
+            background: white;
+        }
+
+        pre {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e492f5 100%);
+            padding: 20px;
+            border-radius: 10px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 13px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            min-height: 80px;
+            border: 2px solid #e0e0e0;
+            color: #333;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .output-box {
+            position: relative;
+        }
+
+        .output-label {
+            color: #666;
+            font-weight: 600;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .key-section {
+            background: linear-gradient(135deg, #ffecd2 0%, #ff0090 100%);
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+        }
+
+        .key-section h2 {
+            color:#590862;
+        }
+
+        .key-box {
+            margin-bottom: 20px;
+        }
+
+        .key-box:last-child {
+            margin-bottom: 0;
+        }
+
+        .toggle-keys {
+            background: #ff016f;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            transition: background 0.3s;
+        }
+
+        .toggle-keys:hover {
+            background: #ff0080;
+        }
+
+        .keys-content {
+            display: none;
+        }
+
+        .keys-content.show {
+            display: block;
+        }
+
+        .icon {
+            font-size: 1.2em;
+        }
+
+        hr {
+            border: none;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #4e0046, transparent);
+            margin: 40px 0;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 25px;
+            }
+
+            h1 {
+                font-size: 1.8em;
+            }
+
+            .subtitle {
+                font-size: 1em;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>🔒 Criptografia RSA</h1>
+        <p class="subtitle">Teste de criptografia em tempo real usando JavaScript</p>
+
+        <div class="key-section">
+            <h2>🔑 Chaves RSA (2048 bits)</h2>
+            <button class="toggle-keys" onclick="toggleKeys()">Mostrar/Ocultar Chaves</button>
+            
+            <div class="keys-content" id="keysContent">
+                <div class="key-box">
+                    <div class="output-label">📤 Chave Pública (para Criptografar)</div>
+                    <pre id="chavePublica">Gerando...</pre>
+                </div>
+
+                <div class="key-box">
+                    <div class="output-label">📥 Chave Privada (para Descriptografar)</div>
+                    <pre id="chavePrivada">Gerando...</pre>
+                </div>
+            </div>
+        </div>
+
+        <hr>
+
+        <div class="section">
+            <h2><span class="icon">✍️</span> Teste em Tempo Real</h2>
+            
+            <label for="mensagem">Digite sua mensagem:</label>
+            <textarea id="mensagem" placeholder="Digite algo para criptografar em tempo real..."></textarea>
+        </div>
+
+        <div class="section">
+            <div class="output-box">
+                <div class="output-label">🔐 Mensagem Criptografada</div>
+                <pre id="criptografado">Aguardando mensagem...</pre>
+            </div>
+        </div>
+        
+        <div class="section">
+            <div class="output-box">
+                <div class="output-label">✅ Mensagem Descriptografada (verificação)</div>
+                <pre id="descriptografado">Aguardando mensagem...</pre>
+            </div>
+        </div>
+    </div>
+
+   <script>
+        // Pega os elementos da página (igual antes)
+        const inputMensagem = document.getElementById('mensagem');
+        const outCripto = document.getElementById('criptografado');
+        const outDecripto = document.getElementById('descriptografado');
+
+        // Esta é a URL da nossa "Cozinha" (Onde o Rust está rodando)
+        const API_URL = "http://127.0.0.1:8080/criptografar";
+
+        // --- 2. OUVINTE DE EVENTO (O "GARÇOM") ---
+        
+        // A função precisa ser 'async' para esperar a resposta da "Cozinha"
+        inputMensagem.addEventListener('input', async function() {
+            const texto = this.value;
+
+            if (texto === "") {
+                outCripto.textContent = "...";
+                outDecripto.textContent = "...";
+                return;
+            }
+
+            // --- 3. O "PEDIDO" PARA A API RUST ---
+            try {
+                // 'fetch' é o "Garçom" indo até a Cozinha
+                const resposta_raw = await fetch(API_URL, {
+                    method: 'POST', // Estamos enviando dados
+                    headers: {
+                        'Content-Type': 'application/json', // Falando em "idioma" JSON
+                    },
+                    // O "Pedido": converte nosso texto para JSON
+                    body: JSON.stringify({ texto: texto }) 
+                });
+
+                if (!resposta_raw.ok) {
+                    throw new Error("Erro da API: " + resposta_raw.statusText);
+                }
+
+                // Pega a "Bandeja" (a resposta) e converte de JSON
+                const resposta_json = await resposta_raw.json();
+
+                // --- 4. MOSTRAR A RESPOSTA DO RUST NA TELA ---
+                // Agora estamos mostrando os dados que VIERAM DO RUST!
+                outCripto.textContent = resposta_json.criptografado_base64;
+                outDecripto.textContent = resposta_json.descriptografado;
+
+            } catch (error) {
+                console.error("Falha ao contatar a API Rust:", error);
+                outCripto.textContent = "ERRO: Não foi possível conectar ao servidor Rust. Você ligou ele?";
+                outDecripto.textContent = "...";
+            }
+        });
+    </script>
+
+</body>
+</html>
+
+</body>
+</html>
