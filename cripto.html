@@ -186,7 +186,7 @@
 
     <div class="container">
         <h1>🔒 Criptografia RSA</h1>
-        <p class="subtitle">Teste de criptografia em tempo real usando JavaScript</p>
+        <p class="subtitle">Teste de criptografia em tempo real usando API</p>
 
         <div class="key-section">
             <h2>🔑 Chaves RSA (2048 bits)</h2>
@@ -240,6 +240,12 @@
 
         // --- 2. OUVINTE DE EVENTO (O "GARÇOM") ---
         
+        function toggleKeys() {
+            const keysContent = document.getElementById('keysContent');
+            keysContent.classList.toggle('show');
+        }
+
+        
         // A função precisa ser 'async' para esperar a resposta da "Cozinha"
         inputMensagem.addEventListener('input', async function() {
             const texto = this.value;
@@ -281,9 +287,6 @@
             }
         });
     </script>
-
-</body>
-</html>
 
 </body>
 </html>

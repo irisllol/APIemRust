@@ -1,6 +1,7 @@
 // --- 1. IMPORTAÇÕES ---
 // Framework do servidor
 use actix_web::{web, App, HttpServer, Responder, HttpResponse, post};
+use base64::{Engine as _, engine::general_purpose::STANDARD};
 
 // Ferramentas do RSA que já conhecemos
 use rsa::{RsaPrivateKey, RsaPublicKey, Pkcs1v15Encrypt};
@@ -63,7 +64,7 @@ async fn manipular_pedido(req: web::Json<MensagemRequest>) -> impl Responder {
         .expect("Falha ao converter bytes para String");
 
     // O JavaScript não entende bytes crus, então convertemos para Base64
-    let texto_criptografado_base64 = base64::encode(&texto_criptografado);
+    let texto_criptografado_base64 = STANDARD.encode(&texto_criptografado);
 
     // 4. Cria a resposta
     let resposta = MensagemResponse {
